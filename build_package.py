@@ -5,16 +5,20 @@
 dist/public/   - for GitHub releases: only BFS Plus's own files (no game files)
     BFS-Plus-<version>.zip          installer (Install BFS Plus.bat)
     BFS-Plus-<version>-manual.zip   no scripts: files to copy + 6 lines to paste into the editor page
+    BFS-Plus-<version>-Setup.exe    setup wizard (needs Inno Setup 6: ISCC.exe on PATH, in its usual install
+                                    folder, or set BFS_ISCC to its full path)
 dist/friends/  - private, for friends: also includes the upgraded Lyrics Assistant (modified copies of the
                  game's lyrics.js / recognition worker) and, in the manual zip, a ready-hooked editor page.
                  Not for public posting.
 
 Never includes .env, API keys, songs, recordings or local paths - the build stops if it finds any.
 """
+import glob
 import hashlib
 import os
 import re
 import shutil
+import subprocess
 import zipfile
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -146,6 +150,27 @@ def build(variant):
     write_zip(os.path.join(out, NAME + "-manual.zip"), manual_stage, NAME + "-manual")
 
 
+def find_inno_compiler():
+    candidates = [os.environ.get("BFS_ISCC", ""), shutil.which("ISCC") or ""]
+    for base in (os.environ.get("ProgramFiles(x86)", ""), os.environ.get("ProgramFiles", ""),
+                 os.path.join(os.environ.get("LOCALAPPDATA", ""), "Programs")):
+        candidates += glob.glob(os.path.join(base, "Inno Setup 6", "ISCC.exe"))
+    return next((path for path in candidates if path and os.path.exists(path)), None)
+
+
+def build_setup_exe():
+    """The setup wizard, from the public installer stage (package/BFS-Plus.iss)."""
+    compiler = find_inno_compiler()
+    if not compiler:
+        print("setup exe skipped: Inno Setup 6 not found (install it or set BFS_ISCC)")
+        return
+    stage = os.path.join(DIST, "public", NAME)
+    subprocess.run([compiler, "/Q", f"/DAppVersion={VERSION}", f"/DStageDir={stage}",
+                    os.path.join(ROOT, "package", "BFS-Plus.iss")], check=True)
+    exe = os.path.join(DIST, "public", f"{NAME}-Setup.exe")
+    print(f"{os.path.relpath(exe, ROOT)}: {os.path.getsize(exe) / 1e6:.2f} MB")
+
+
 def main():
     if os.path.isdir(DIST):   # clear older single-variant builds
         for old in os.listdir(DIST):
@@ -153,6 +178,7 @@ def main():
             if old.startswith("BFS-Plus-"):
                 shutil.rmtree(path, ignore_errors=True) if os.path.isdir(path) else os.remove(path)
     build("public")
+    build_setup_exe()
     build("friends")
 
 

@@ -26,11 +26,14 @@ without it see the game's normal lyrics.
 
 ## Install
 
-Download a zip from [Releases](../../releases):
+Download from [Releases](../../releases):
 
-- **BFS-Plus-x.y.z.zip**: close the game, unzip, then double-click `Install BFS Plus.bat`. It finds the
-  game through Steam, and offers to download [MelonLoader](https://github.com/LavaGang/MelonLoader) 0.7.3
-  if needed. Run it again after a game update.
+- **BFS-Plus-x.y.z-Setup.exe**: a normal setup wizard. It finds the game through Steam, offers to download
+  [MelonLoader](https://github.com/LavaGang/MelonLoader) 0.7.3 if needed, and appears in Windows Settings
+  > Apps for uninstalling. It isn't code-signed, so Windows may show "Windows protected your PC": choose
+  "More info" > "Run anyway".
+- **BFS-Plus-x.y.z.zip**: the same install as a script. Close the game, unzip, then double-click
+  `Install BFS Plus.bat`. Run it again after a game update.
 - **BFS-Plus-x.y.z-manual.zip**: no scripts at all, in case your browser or antivirus blocks the
   installer. Follow `MANUAL-INSTALL.txt`.
 
@@ -42,7 +45,7 @@ Download a zip from [Releases](../../releases):
 |---|---|
 | `mod/` | Chart editor add-ons: `lyric_designer.js` (3D designer), `lyric3d_store.js` (saving and loading the design), `accessibility.js`, `lyric_tap_sync.js`, `editor_plus.css`, `editor_plus_i18n.js` |
 | `lyric3d/plugin/` | The in-game mod (MelonLoader, C#, net6) |
-| `package/` | Installer, uninstaller and user docs |
+| `package/` | Installers (script and Inno Setup wizard `BFS-Plus.iss`), uninstaller and user docs |
 | `chart_pipeline/` | Song → chart: vocal separation, the game's chart generator, Whisper lyrics |
 | `ai_director/` | Claude plans the chart (tempo fit, drops, phrases, events) |
 | `lyric_director/` | Claude cleans up lyrics and designs the 3D signs |
@@ -56,7 +59,7 @@ they keep working when the game updates. None of the game's files are in this re
 - **Game mod:** .NET 6 SDK, plus the game with MelonLoader installed and started once. Put your game path in
   `lyric3d/plugin/GameDir.local.props`, or pass `-p:GameDir="..."`. Then run
   `dotnet build lyric3d/plugin -c Release`.
-- **Release zips:** `python build_package.py` writes them to `dist/public/`.
+- **Release files:** `python build_package.py` writes the zips and, if [Inno Setup 6](https://jrsoftware.org/isinfo.php) is installed, the setup exe to `dist/public/`.
 - **Creator tools:** see `package/creator-tools/CREATOR_TOOLS.md`.
 
 ## Credits
