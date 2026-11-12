@@ -1,0 +1,43 @@
+# ---- secrets and personal settings
+.env
+work_dir.txt
+ai_director/spend_ledger.json
+
+# ---- the game's own files (not ours to publish) - kept locally for the friends build
+original/
+mod/chart_editor.html
+mod/lyrics.js
+mod/lyric_recognition_worker.js
+mod.patch
+package/manual/
+ai_director/catalog.json
+
+# ---- songs, stems, recordings, test audio
+mod/_test/
+tests/
+*.mp3
+*.ogg
+*.wav
+*.mp4
+*.mkv
+
+# ---- build output and caches
+dist/
+lyric3d/plugin/bin/
+lyric3d/plugin/obj/
+__pycache__/
+*.pyc
+*.stackdump
+work/
+chart_pipeline/charts/
+
+# ---- local-only helpers and old experiments
+/install.ps1
+/uninstall.ps1
+/dev_server.py
+lyric3d/melonloader_installed_files.json
+ai_director/director_follow_backup.py
+ai_director/director_onebeat.py
+
+# ---- local build settings
+lyric3d/plugin/GameDir.local.props

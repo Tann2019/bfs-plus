@@ -1,0 +1,172 @@
+/* Editor-plus additions: accessibility + lyric assistant upgrades. */
+
+/* ---- Screen-reader-only helper ---- */
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+
+/* ---- Everything below that changes how the editor LOOKS is opt-in (Settings > Accessibility mode). ---- */
+
+/* Focus outlines (html.a11y-focus): visible keyboard focus; mouse clicks stay ring-free via :focus-visible. */
+html.a11y-focus button:focus-visible,html.a11y-focus select:focus-visible,html.a11y-focus input:focus-visible,html.a11y-focus textarea:focus-visible,
+html.a11y-focus label:focus-visible,html.a11y-focus [tabindex]:focus-visible,html.a11y-focus summary:focus-visible,html.a11y-focus a:focus-visible{
+  outline:2px solid var(--theme-accent,#7c94ff)!important;outline-offset:2px!important;
+  box-shadow:0 0 0 4px rgba(0,0,0,.55)!important;
+}
+/* File inputs are visually hidden behind <label for=...>; show focus on the label instead. */
+html.a11y-focus label:has(+ input[type="file"]:focus-visible){outline:2px solid var(--theme-accent,#7c94ff);outline-offset:2px;}
+html.a11y-focus canvas:focus-visible{outline:2px solid var(--theme-accent,#7c94ff);outline-offset:-2px;}
+
+/* Reduce motion (html.a11y-reduce-motion; defaults to the OS setting when Accessibility mode is turned on). */
+html.a11y-reduce-motion *,html.a11y-reduce-motion *::before,html.a11y-reduce-motion *::after{transition-duration:0s!important;animation-duration:0s!important;animation-iteration-count:1!important;scroll-behavior:auto!important;}
+
+/* Larger help bar (html.a11y-big-help): the stock bottom help bar is 9-10px. */
+html.a11y-big-help #helpBar span{font-size:12px;}
+html.a11y-big-help #helpBar .hk{font-size:11.5px;}
+
+/* ---- High contrast theme extras (canvas colors come from THEMES.highContrast) ---- */
+html.a11y-high-contrast button,html.a11y-high-contrast select,html.a11y-high-contrast input{border-color:#fff!important;}
+html.a11y-high-contrast .tb-label,html.a11y-high-contrast .track-label,html.a11y-high-contrast .lyric-assistant-hint,
+html.a11y-high-contrast .lyric-assistant-status,html.a11y-high-contrast #helpBar span{color:#f0f0f0!important;}
+html.a11y-high-contrast .modal{border:2px solid #fff;}
+html.a11y-high-contrast .btn-primary,html.a11y-high-contrast .btn-ok{background:#ffd400!important;color:#000!important;border-color:#ffd400!important;}
+
+/* ---- Accessibility settings group ---- */
+#a11ySettingsGroup .a11y-inline{display:flex;align-items:center;gap:5px;cursor:pointer;}
+#a11ySettingsGroup .a11y-inline input{width:auto;height:auto;margin:0;}
+#a11ySettingsGroup .a11y-options{display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;}
+#a11ySettingsGroup .a11y-options[hidden]{display:none;}
+
+/* ---- Toast for assistant / tap-sync results ---- */
+#editorPlusToast{position:fixed;left:50%;bottom:48px;transform:translate(-50%,12px);max-width:min(640px,calc(100vw - 32px));padding:10px 16px;border-radius:8px;
+  background:var(--modal-bg,#22223a);color:var(--modal-text,#eee);border:1px solid var(--btn-border,#3a3a55);box-shadow:0 6px 24px rgba(0,0,0,.45);
+  font-size:13px;line-height:1.45;opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease;z-index:400;}
+#editorPlusToast.show{opacity:1;transform:translate(-50%,0);}
+
+/* ---- Shortcut reference ---- */
+.shortcuts-dialog{width:720px;max-width:calc(var(--editor-width,100vw) - 40px);min-width:0;box-sizing:border-box;}
+.shortcuts-hint{margin:-4px 0 12px;font-size:12px;color:var(--theme-text,#aaa);}
+.shortcuts-table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.5;}
+.shortcuts-table th{text-align:left;font-weight:500;padding:6px 14px 6px 0;white-space:nowrap;vertical-align:top;}
+.shortcuts-table td{padding:6px 0;color:var(--modal-text,#ddd);}
+.shortcuts-table tr+tr th,.shortcuts-table tr+tr td{border-top:1px solid var(--btn-border,#3a3a55);}
+.shortcuts-table kbd{display:inline-block;padding:1px 6px;border-radius:4px;border:1px solid var(--help-key-border,#555);background:var(--help-key-bg,#2a2a2a);
+  color:var(--help-key-text,#ddd);font:600 12px/1.5 ui-monospace,Consolas,monospace;}
+
+/* ---- Lyric assistant: AI options ---- */
+.lyric-ai-section .lyric-ai-wide{grid-column:1 / -1;}
+.lyric-ai-check{display:flex;align-items:flex-start;gap:8px;margin:10px 0 0;font-size:11px;color:var(--theme-text,#aaa);cursor:pointer;line-height:1.4;}
+.lyric-ai-check input{width:auto;height:auto;margin:1px 0 0;}
+.lyric-ai-note{margin:8px 0 0;font-size:11px;line-height:1.45;color:var(--theme-text,#999);}
+.lyric-recognition-status-row{display:flex;align-items:flex-start;gap:10px;}
+.lyric-recognition-status-row .lyric-assistant-status{flex:1;}
+.lyric-recognition-status-row button{flex:none;margin-top:-8px;}
+.lyric-auto-actions button:disabled,.lyric-assistant-file-row button:disabled{opacity:.42;cursor:default;}
+.lyric-tap-latency{display:flex;align-items:center;gap:6px;margin-left:auto;font-size:11px;color:var(--theme-text,#aaa);}
+.lyric-tap-latency input{width:64px;height:28px;box-sizing:border-box;}
+#lyricRecognitionHint[hidden]{display:none;}
+
+/* ---- Tap sync panel ---- */
+#lyricTapSyncPanel{position:fixed;top:72px;left:50%;transform:translateX(-50%);width:min(720px,calc(100vw - 32px));box-sizing:border-box;z-index:300;
+  padding:16px 18px;border-radius:12px;background:var(--modal-bg,#22223a);color:var(--modal-text,#eee);border:1px solid var(--btn-border,#3a3a55);
+  box-shadow:0 10px 36px rgba(0,0,0,.55);}
+#lyricTapSyncPanel .tap-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;font-size:13px;}
+#lyricTapSyncPanel .tap-line{display:flex;gap:10px;align-items:baseline;min-height:20px;font-size:13px;color:var(--theme-text,#aaa);overflow:hidden;}
+#lyricTapSyncPanel .tap-line span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#lyricTapSyncPanel .tap-tag{flex:none;width:64px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;opacity:.8;}
+#lyricTapSyncPanel .tap-current{display:block;margin:8px 0;padding:10px 12px;border-radius:8px;font-size:24px;font-weight:700;line-height:1.3;
+  color:var(--modal-text,#fff);background:rgba(255,255,255,.06);border-left:4px solid var(--theme-accent,#7c94ff);white-space:normal;}
+#lyricTapSyncPanel.tap-flash .tap-current{animation:tapFlash .25s ease-out;}
+@keyframes tapFlash{from{background:rgba(124,148,255,.45);}to{background:rgba(255,255,255,.06);}}
+#lyricTapSyncPanel .tap-progress{height:4px;margin:10px 0 8px;border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden;}
+#lyricTapSyncPanel .tap-progress span{display:block;height:100%;width:0;background:var(--theme-accent,#7c94ff);transition:width .15s ease;}
+#lyricTapSyncPanel .tap-keys{margin:0;font-size:12px;line-height:1.5;color:var(--theme-text,#aaa);}
+#lyricTapSyncPanel .tap-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:10px;}
+
+/* Selects in the assistant clipped their text at 32px height. */
+.lyric-settings-grid select{padding-top:0;padding-bottom:0;line-height:30px;}
+
+/* ---- 3D Lyric Designer ---- */
+#lyric3dOpenButton{margin-left:4px;}
+#lyric3dPanel{display:none;position:fixed;left:10px;top:10px;bottom:10px;width:360px;z-index:95;flex-direction:column;gap:8px;padding:12px;box-sizing:border-box;
+  overflow-y:auto;background:var(--modal-bg,#22223a);color:var(--modal-text,#e6e6f0);border:1px solid var(--btn-border,#3a3a55);border-radius:8px;
+  box-shadow:0 8px 28px rgba(0,0,0,.45);font-size:12px;}
+#lyric3dPanel.open{display:flex;}
+html.l3d-open #trackPreviewPanel.fullscreen{left:380px!important;}
+#lyric3dPanel header{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+#lyric3dPanel h2{margin:0;font-size:15px;}
+#lyric3dPanel .l3d-hint{margin:0;color:var(--theme-text,#9a9ab0);font-size:11px;line-height:1.45;}
+#lyric3dPanel .l3d-status{margin:0;min-height:15px;color:#ffc857;font-size:11px;}
+#lyric3dPanel .l3d-actions,#lyric3dPanel .l3d-buttons{display:flex;flex-wrap:wrap;gap:6px;}
+#lyric3dPanel .l3d-danger{color:#ff8a8a;}
+#lyric3dPanel .l3d-list{list-style:none;margin:0;padding:0;max-height:190px;overflow-y:auto;border:1px solid var(--btn-border,#3a3a55);border-radius:6px;}
+#lyric3dPanel .l3d-list button{display:flex;align-items:center;gap:6px;width:100%;padding:5px 8px;border:0;border-radius:0;background:transparent;text-align:left;cursor:pointer;color:inherit;}
+#lyric3dPanel .l3d-list button:hover{background:rgba(255,255,255,.05);}
+#lyric3dPanel .l3d-list button.selected{background:rgba(124,148,255,.22);}
+#lyric3dPanel .l3d-time{flex:none;width:44px;font-variant-numeric:tabular-nums;opacity:.75;}
+#lyric3dPanel .l3d-kind{flex:none;}
+#lyric3dPanel .l3d-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#lyric3dPanel .l3d-empty{padding:10px;color:var(--theme-text,#9a9ab0);}
+#lyric3dPanel fieldset{margin:0;padding:8px 10px 10px;border:1px solid var(--btn-border,#3a3a55);border-radius:6px;display:flex;flex-direction:column;gap:6px;}
+#lyric3dPanel legend{padding:0 4px;font-weight:600;}
+#lyric3dPanel label{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+#lyric3dPanel label input[type=number],#lyric3dPanel label select,#lyric3dPanel label input[type=text]{width:150px;box-sizing:border-box;}
+#lyric3dPanel .l3d-line{display:flex;align-items:center;gap:4px;}
+#lyric3dPanel .l3d-line input[type=text]{flex:1;min-width:0;}
+#lyric3dPanel .l3d-line input[type=number]{width:52px;}
+#lyric3dPanel .l3d-line input[type=color],#lyric3dPanel .l3d-gradient input{width:30px;height:24px;padding:0;border:0;background:none;}
+#lyric3dPanel .l3d-line label{gap:2px;justify-content:flex-start;}
+#lyric3dPanel .l3d-xyz{display:flex;gap:6px;}
+#lyric3dPanel .l3d-xyz label{flex:1;justify-content:flex-start;gap:4px;}
+#lyric3dPanel .l3d-xyz input{width:100%!important;}
+#lyric3dPanel .l3d-check{justify-content:flex-start;}
+#lyric3dPanel .l3d-gradient{display:flex;gap:8px;}
+#lyric3dPanel details summary{cursor:pointer;font-weight:600;}
+#lyric3dPanel details label{margin-top:6px;}
+
+#lyric3dPanel .l3d-ride{display:flex;align-items:center;gap:10px;}
+
+/* ---------- 3D Lyric Designer: buttons and fields styled like the rest of the editor ---------- */
+#lyric3dOpenButton{display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:0 0 auto;box-sizing:border-box;min-width:104px;min-height:32px;
+  padding:0 10px;border-radius:7px;border:1px solid #3fd6c4;background:linear-gradient(180deg,#22b3a3,#178f83);color:#fff;cursor:pointer;
+  font-size:12px;font-weight:700;line-height:1.2;white-space:nowrap;box-shadow:0 2px 7px rgba(23,143,131,.4);transition:filter .15s,transform .08s,box-shadow .15s;}
+#lyric3dOpenButton:hover{filter:brightness(1.13);transform:translateY(-1px);}
+#lyric3dOpenButton:active{transform:translateY(1px);box-shadow:0 1px 4px rgba(0,0,0,.3);}
+html.l3d-open #lyric3dOpenButton{box-shadow:0 0 0 2px rgba(63,214,196,.55),0 2px 7px rgba(23,143,131,.4);}
+
+#lyric3dPanel button:not(li > button){display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:28px;padding:4px 11px;box-sizing:border-box;
+  border-radius:6px;border:1px solid var(--btn-border,#3a3a55);background:var(--btn-bg,#2d2d44);color:var(--btn-text,#c8c8d4);
+  font:inherit;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s,filter .15s,transform .08s;}
+#lyric3dPanel button:not(li > button):hover{border-color:#5a5a85;background:#36365a;color:#fff;transform:translateY(-1px);}
+#lyric3dPanel button:not(li > button):active{transform:translateY(1px);}
+#lyric3dPanel button:not(li > button):disabled{opacity:.4;cursor:default;transform:none;}
+#lyric3dPanel button:focus-visible{outline:2px solid #7c94ff;outline-offset:1px;}
+
+#lyric3dPanel button[data-action=play]{min-width:84px;border-color:#3fbf7f;background:linear-gradient(180deg,#2fa36a,#238454);color:#fff;}
+#lyric3dPanel button[data-action=play]:hover{background:linear-gradient(180deg,#36b877,#289560);border-color:#5fd99a;}
+#lyric3dPanel button[data-action=generate]{border-color:#9b7bff;background:linear-gradient(180deg,#8066e8,#694fd0);color:#fff;}
+#lyric3dPanel button[data-action=generate]:hover{background:linear-gradient(180deg,#8d75f0,#755bdc);border-color:#b39cff;}
+#lyric3dPanel button[data-action=add-road],#lyric3dPanel button[data-action=add-world]{border-color:#3fd6c4;color:#9ff3e8;background:rgba(34,179,163,.12);}
+#lyric3dPanel button[data-action=add-road]:hover,#lyric3dPanel button[data-action=add-world]:hover{background:rgba(34,179,163,.25);color:#fff;border-color:#6fe6d8;}
+#lyric3dPanel button[data-action=copy-look],#lyric3dPanel button[data-action=add-line]{width:100%;border-style:dashed;}
+#lyric3dPanel button.l3d-danger{border-color:#7a3a4a;color:#ff9a9a;background:rgba(255,90,90,.08);}
+#lyric3dPanel button.l3d-danger:hover{background:rgba(255,90,90,.2);border-color:#ff7a7a;color:#fff;}
+#lyric3dPanel button[data-action=close],#lyric3dPanel button[data-action=remove-line]{min-height:24px;padding:2px 8px;background:transparent;}
+#lyric3dPanel button[data-action=remove-line]{min-width:24px;padding:0;color:#ff9a9a;}
+html.l3d-placing #lyric3dPanel button[data-action=add-world],#lyric3dPanel button[data-action=add-world][aria-pressed=true]{background:#22b3a3;color:#fff;}
+
+#lyric3dPanel input[type=text],#lyric3dPanel input[type=number],#lyric3dPanel select{min-height:26px;padding:3px 7px;box-sizing:border-box;border-radius:5px;
+  border:1px solid var(--btn-border,#3a3a55);background:var(--btn-bg,#2d2d44);color:var(--btn-text,#e0e0ea);font:inherit;}
+#lyric3dPanel input[type=text]:focus,#lyric3dPanel input[type=number]:focus,#lyric3dPanel select:focus{outline:none;border-color:#7c94ff;box-shadow:0 0 0 2px rgba(124,148,255,.25);}
+#lyric3dPanel input[type=checkbox]{accent-color:#3fd6c4;}
+#lyric3dPanel input[type=color]{border-radius:5px;cursor:pointer;}
+#lyric3dPanel .l3d-ride{flex-wrap:wrap;padding:8px;border-radius:7px;background:rgba(63,191,127,.08);border:1px solid rgba(63,191,127,.25);}
+#lyric3dPanel fieldset{background:rgba(255,255,255,.02);}
+#lyric3dPanel legend{color:#9ff3e8;}
+/* the panel scrolls as a whole: children keep their size instead of the sign list being squashed to 0 */
+#lyric3dPanel > *{flex-shrink:0;}
+#lyric3dPanel .l3d-list{min-height:120px;}
+#lyric3dPanel .l3d-actions button:not(li > button),#lyric3dPanel .l3d-buttons button:not(li > button){min-height:26px;padding:3px 9px;}
+/* song position scrubber in the 3D Lyric Designer */
+#lyric3dPanel .l3d-scrub{display:flex;align-items:center;gap:4px;width:100%;}
+#lyric3dPanel .l3d-scrub input[type=range]{flex:1;min-width:0;accent-color:#3fbf7f;cursor:pointer;}
+#lyric3dPanel .l3d-scrub button:not(li > button){min-width:28px;min-height:26px;padding:2px 6px;}
+#lyric3dPanel .l3d-scrub-time{flex:none;min-width:52px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;color:#7cf0a8;}

@@ -1,0 +1,9 @@
+# Python 3.11. Install PyTorch with CUDA first (NVIDIA GPU strongly recommended):
+#   pip install torch==2.5.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu121
+# then:
+#   pip install -r requirements.txt
+numpy>=2.0
+soundfile>=0.13
+faster-whisper==1.2.1
+ctranslate2>=4.5
+anthropic>=2.8

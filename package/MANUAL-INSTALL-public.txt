@@ -1,0 +1,72 @@
+BFS PLUS - MANUAL INSTALL (no installer scripts)
+================================================
+
+This zip has no .bat/.ps1 files - just the mod files to copy by hand, plus 6 lines to paste into the game's
+chart editor page. About 10 minutes. Works with any version of the game's editor.
+
+Find your game folder first
+---------------------------
+Steam > right-click Beat For Speed > Manage > Browse local files.
+That folder (with beatforspeed.exe in it) is called GAME below.
+
+CLOSE THE GAME before starting.
+
+
+STEP 1 - MelonLoader (needed for the 3D lyrics in game)
+--------------------------------------------------------
+Skip this step if GAME already has a "MelonLoader" folder and a "version.dll".
+
+1. Open https://github.com/LavaGang/MelonLoader/releases/tag/v0.7.3
+2. Download "MelonLoader.x64.zip" (under Assets).
+3. Extract everything in it straight into GAME (version.dll ends up next to beatforspeed.exe).
+4. Start the game once and wait - the first start takes a few minutes. Close it at the menu.
+   This creates a "Mods" folder in GAME.
+
+
+STEP 2 - The 3D lyrics game mod
+-------------------------------
+Copy  game-mod\BfsLyric3D.dll  into  GAME\Mods\
+
+
+STEP 3 - The chart editor upgrades
+----------------------------------
+1. Copy everything inside this zip's "editor" folder into  GAME\Tools\chart_editor\
+2. Make a backup copy of  GAME\Tools\chart_editor\chart_editor.html  (e.g. chart_editor.original.html).
+3. Open chart_editor.html with Notepad and add these lines (Ctrl+F to find each spot):
+
+   a) Find   </head>
+      and put this on its own line just BEFORE it:
+         <link rel="stylesheet" href="editor_plus.css">
+
+   b) Find   <script src="locales.js
+      and put this on its own line just AFTER that line:
+         <script src="editor_plus_i18n.js"></script>
+
+   c) Find   <script src="lyrics.js
+      and put this on its own line just AFTER that line:
+         <script src="lyric3d_store.js"></script>
+
+   d) Find the LAST   </body>   (at the very end of the file)
+      and put these three lines just BEFORE it:
+         <script src="accessibility.js"></script>
+         <script src="lyric_tap_sync.js"></script>
+         <script src="lyric_designer.js"></script>
+
+4. Save. Start the game and open the chart editor (Ctrl+F5 if it was already open).
+   You should see a teal "3D Lyrics" button next to "Lyrics Assistant".
+
+After a game update the editor page may be replaced - just repeat step 3.3.
+How to use everything: README.txt.
+
+
+UNINSTALL
+---------
+Delete GAME\Mods\BfsLyric3D.dll, and put your backup chart_editor.html back (or Steam > Verify integrity
+of game files). Optional: delete version.dll and the MelonLoader folder.
+
+
+IF THE DOWNLOAD GETS BLOCKED
+----------------------------
+"Virus detected" / "Download error" come from the browser or Windows Defender guessing about unknown
+files. This manual zip has no scripts. If it is still blocked, check it on virustotal.com, or download it
+from the project's GitHub releases page.
